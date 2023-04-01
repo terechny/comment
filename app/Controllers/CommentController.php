@@ -3,41 +3,35 @@
 namespace App\Controllers;
 
 use Core\Controller;
+use Core\Request;
 use App\Models\Comment;
 
 class CommentController extends Controller{
 
-    public function index(){
+    private Comment $model;
 
-        $model = new Comment;
+    public function __construct(){
 
-        $data = [
-            'data' => $model->all(),
-            'message' => 'index',
-        ];
-
-        header("Content-Type: application/json");
-        print json_encode($data);          
-
+        $this->model = new Comment;
     }
 
-    public function store(){
+    public function index(){
 
-        $model = new Comment;
+        $this->responce_json(['data' => $this->model
+                                             ->all()
+                                             ->execute()
+                                             ->rows() 
+                                        
+                             ]);        
+    }
 
-        $data = [
-            
-            'data' => $model->create([               
-                            'text' => $_REQUEST['text'],
-                            'user' => 'John Doe'
-                        ]),
-            'message' => 'store',
-            'data' => $_REQUEST
-        ];
+    public function store(Request $request){
 
-        header("Content-Type: application/json");
-        print json_encode($data);   
+        $this->responce_json(['result' => $this->model
+                                               ->create($request->data())
+                                               ->execute()
+                                               ->result          
+                            ]);
     }
 
 }
-

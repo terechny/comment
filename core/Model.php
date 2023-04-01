@@ -5,7 +5,10 @@ namespace Core;
 class Model
 {
     private $connection;
-    private $fields;
+    public $fields;
+    public $table;
+    public $query;
+    public $result;
 
     public function __construct(){
 
@@ -16,82 +19,69 @@ class Model
 
         $this->connection = new \mysqli("db", "root", "root", "comments");
         if($this->connection->connect_error) {
-            echo '<br>connection failed: ' . $this->connection->connect_error; 
+            return $this->connection->connect_error; 
         } 
     }
 
-    private function close(){
+    private function query(){
 
-        $this->connection->close();
+        $res = $this->connection->query($this->query);
+
+        return $res ? $res : $this->connection->error;
     }
 
-    public function create(array $params){
+    public function create(array $params) : Model
+    {
 
-        $field = '';
         $values = '';
+        $fielde = '';
 
-        foreach( $params as $key => $value ){
+        foreach( $this->fields as $field ){
 
-            $field .=  "`". $key ."`,";
-            $values .= "'" . $value  . "',";
+            if( isset(  $params[$field] ) ){
+
+                $fielde .=  "`". $field ."`,";
+                $values .= "'" . $params[$field]  . "',";
+            }         
         }
 
-        $sql = "INSERT INTO `comments` ( ".  substr($field, 0, -1)  ." ) VALUES ( ". substr($values, 0, -1)  .");";
-       
-        $this->qw($sql);
-  
+        $this->query = "INSERT INTO `". $this->table ."` ( ".  substr($fielde, 0, -1)  ." ) VALUES ( ". substr($values, 0, -1)  .");";
+
+        return $this;  
     }
 
-    private function qw($query){
+    public function all() : Model
+    {
 
-        $res = $this->connection->query($query);
-        if($res){
-            return $res;
-        } else{
-            return $this->connection->error;
-        } 
+        $this->query = "SELECT * FROM " . $this->table;
+
+        return $this;
     }
 
-    public function all(){
+    public function execute() : Model
+    {
 
-        $sql = "SELECT * FROM comments";
-        $result = $this->connection->query($sql);
+        $this->result = $this->query($this->query );
+
+        return $this;
+    }
+
+    public function rows() : array
+    {
+
         $rows = [];
-        if($result){
-            foreach($result as $row){
 
-                $rows[] = $row;
-                
+        if($this->result){
+            foreach($this->result as $row){
+                $rows[] = $row;          
             }
         }
         return $rows;
-    }
-
-    public function createTable(){
-
-        $query =  'START TRANSACTION;
-  
-                  CREATE TABLE `comments` (
-                  `id` int(11) NOT NULL,
-                  `text` text,
-                  `user` varchar(250) DEFAULT NULL,
-                  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-                  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-  
-                  ALTER TABLE `comments`
-                  ADD PRIMARY KEY (`id`);
-  
-                  ALTER TABLE `comments`
-                  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-                  COMMIT;';
-
-        $this->qw($query);
-  
-    }   
-    
+    }    
+      
     function __destruct() {
         
-        $this->close();
+        $this->connection->close();
     }
 
 }

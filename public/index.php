@@ -1,8 +1,9 @@
 <?php
 
+namespace App;
+
 require_once  '../vendor/autoload.php';
 
-$routes = require_once  '../routes/api.php';
+$router = new \Core\Router( \Routes\Routes::list());
 
-$router = new Core\Router($routes);
 $router->exec();

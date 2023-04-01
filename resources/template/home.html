@@ -71,10 +71,11 @@
 
                         <h5>Comments</h5>
 
-                        <textarea class="form-control" name="" id="" cols="5" rows="3"></textarea>
-
-                        <button class="btn btn-primary mt-2" id="add-button">Add comment</button>
-
+                        <form name="comment">
+                            <textarea class="form-control" name="text" id="" cols="5" rows="3"></textarea>
+                            <button type="button" class="btn btn-primary mt-2" id="add-button">Add comment</button>
+                        </form>
+                      
                         <div id="comment-wrap">
 
                           <div class="mt-4 border-top pt-2">                      
@@ -97,6 +98,8 @@
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+
     <script>
 
         let button = document.getElementById('add-button')
@@ -104,18 +107,22 @@
         button.addEventListener('click', addComment)
 
         function addComment(){
-            
 
-            getUsers()
+            let serial = $('form').serializeArray();            
+
+            $.post( "/store", { comment: serial[0]['value'] })
+            .done(function( data ) {
+                console.log(data)
+
+                getUsers()
+            });          
         }
-
-
 
         async function getUsers(){
 
             const response = await fetch("/comment", {
                 method: "GET",
-                headers: {"Accept": "application/json"}
+                headers: {"Accept": "application/json"}           
             })
 
             if(response.ok == true){
@@ -123,8 +130,6 @@
                 let data = await response.json()
 
                 for(let comment in data.data ){
-
-                    console.log( data.data[comment] )   
 
                     let div_comment = document.createElement("div")
 
@@ -141,21 +146,13 @@
                     div_comment.appendChild(p_date)
 
                     document.getElementById('comment-wrap').appendChild(div_comment)
-                    
-
                 }  
-                
-                
-
-
-                /*
-                
-                tbody.innerHTML = ''
-                */
             }
         }
 
-          
+
+        getUsers()
+
 
     </script>
 

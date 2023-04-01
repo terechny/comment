@@ -6,8 +6,7 @@ use Core\Model;
 
 class Comment extends Model{
 
-    private $fields = [
-        'text'
-    ];
+    public $table = 'comments';
+    public $fields = ['text', 'user'];
 
 }

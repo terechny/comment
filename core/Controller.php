@@ -4,11 +4,9 @@ namespace Core;
 
 class Controller
 {
+    public function responce_json($data){
 
-    public function index()
-    {
-        print "Controller class";
+        header("Content-Type: application/json");
+        print json_encode($data);   
     }
 }
-
-

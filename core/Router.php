@@ -41,11 +41,7 @@ class Router{
         $namespace = 'App\\Controllers\\' . $contreller;
 
         $exemplar = new $namespace();
-        $exemplar->$method();
-
+        $exemplar->$method( new Request );
     }
 
 }
-
-
-
