@@ -19,15 +19,16 @@ class CommentController extends Controller{
 
         $this->responce_json(['data' => $this->model
                                              ->all()
-                                             ->execute()
+                                             ->desk()
+                                             ->execute()                                           
                                              ->rows() 
                                         
                              ]);        
     }
 
     public function store(Request $request){
-
-        $this->responce_json(['result' => $this->model
+    
+        $this->responce_json(['data' => $this->model
                                                ->create($request->data())
                                                ->execute()
                                                ->result          

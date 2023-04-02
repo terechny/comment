@@ -50,19 +50,6 @@
                         Mauris tincidunt congue magna in molestie. 
                         Fusce placerat magna vitae quam tempor, congue elementum mauris sollicitudin.
                     </p>
-
-                    <div>                   
-                        Donec at libero vitae odio pharetra pellentesque. 
-                        Donec quis blandit tellus. In ac augue ut risus iaculis condimentum. 
-                        Suspendisse lorem erat, faucibus eu gravida lacinia, efficitur vitae tellus. 
-                        Fusce maximus ultricies quam, quis finibus risus aliquam in. 
-                        Sed sed blandit quam. Donec eleifend consequat nunc, vel elementum lorem tristique ut. 
-                        Cras tincidunt ante sit amet lacus laoreet lacinia. 
-                        Sed eleifend orci ligula, et auctor dui tincidunt et. 
-                        Aliquam congue tincidunt lectus nec ornare. 
-                        Interdum et malesuada fames ac ante ipsum primis in faucibus. 
-                        Proin sit amet bibendum nibh.
-                    </div>
                 </div>
                 <div>
                     <hr>
@@ -70,26 +57,18 @@
                     <div>
 
                         <h5>Comments</h5>
-
+                        <div class="alert alert-danger" role="alert" style="display:none">
+                          Простое уведомление с info — проверьте!
+                        </div>
                         <form name="comment">
                             <textarea class="form-control" name="text" id="" cols="5" rows="3"></textarea>
+                            <input type="hidden" name="name" value="John Doe">
                             <button type="button" class="btn btn-primary mt-2" id="add-button">Add comment</button>
                         </form>
                       
                         <div id="comment-wrap">
 
-                          <div class="mt-4 border-top pt-2">                      
-                              <p>John Doe</p>
-                              <p>
-                                  Vivamus lacinia arcu nec molestie sagittis. 
-                                  Suspendisse tempus metus viverra purus luctus molestie id at quam. 
-                                  Etiam eget aliquet sem. Aenean interdum metus a pretium tempor. 
-                                  Nulla facilisi. Ut lacinia ut quam et facilisis.
-                              </p>
-                              <p> 20:20 10.10.2010</p>
-                          </div>
-
-                       </div>
+                        </div>
 
                     </div>
 
@@ -106,16 +85,24 @@
 
         button.addEventListener('click', addComment)
 
-        function addComment(){
+        async function addComment(){
 
             let serial = $('form').serializeArray();            
 
-            $.post( "/store", { comment: serial[0]['value'] })
+            if( serial[0]['value'].length == 0 ){ 
+                alert('Enpty form');
+                return;              
+            } 
+            
+            $.post( "/store", { 
+              text: serial[0]['value'],
+              user: serial[1]['value']
+            
+            })
             .done(function( data ) {
-                console.log(data)
-
+                $('form')[0].reset();
                 getUsers()
-            });          
+            });         
         }
 
         async function getUsers(){
@@ -128,6 +115,8 @@
             if(response.ok == true){
 
                 let data = await response.json()
+                const contentWrap = document.getElementById('comment-wrap')
+                contentWrap.innerHTML = "";
 
                 for(let comment in data.data ){
 
@@ -145,14 +134,14 @@
                     div_comment.appendChild(p_comment)
                     div_comment.appendChild(p_date)
 
-                    document.getElementById('comment-wrap').appendChild(div_comment)
+                    contentWrap.appendChild(div_comment)
+                
                 }  
             }
         }
 
 
         getUsers()
-
 
     </script>
 

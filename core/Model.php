@@ -17,7 +17,7 @@ class Model
 
     private function connect(){
 
-        $this->connection = new \mysqli("db", "root", "root", "comments");
+        $this->connection = new \mysqli( $_ENV['DB_HOST'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD'], $_ENV['DB_NAME'] );
         if($this->connection->connect_error) {
             return $this->connection->connect_error; 
         } 
@@ -60,11 +60,19 @@ class Model
 
     public function execute() : Model
     {
-
         $this->result = $this->query($this->query );
 
         return $this;
     }
+
+    public function desk( string $field = 'id') : Model
+    {
+        $this->query .= " order by `". $this->table ."`.`". $field ."` DESC ";
+
+        return $this;
+    } 
+
+    
 
     public function rows() : array
     {
