@@ -22,7 +22,21 @@ class Request
 
     private function checkField($field){
 
-        return $field;
+        return  $this->symbolsRemoval($field);
+    }
+
+    private function symbolsRemoval($string){
+
+        $symbols = [ "'", '"', "-", "/", 
+                     "*", "<", ">", ";", 
+                     "=", "_", "#", "^", 
+                     "|", "~", "`", "@", 
+                     "&", "%", "$", ")",
+                     "(", "{", "}", ":", 
+                     "EXEC", "sp_executesql", 
+                     "xp_cmdshell", "DROP" ];
+
+        return str_replace($symbols, "", $string);
     }
 
 }
